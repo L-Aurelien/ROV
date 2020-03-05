@@ -1,6 +1,19 @@
 import processing.serial.*;
+import net.java.games.input.*;
+import org.gamecontrolplus.*;
+import org.gamecontrolplus.gui.*;
 
+ControlIO control;
+Configuration config;
+ControlDevice gpad;
+
+float x;
+float y;
+float z;
 String sb;
+int moteur1;
+int moteur2;
+int moteur3;
 Serial myPort;
 
 String[] list;
@@ -13,10 +26,30 @@ void setup()
  noFill();
  stroke(255);
  textSize(16);
+ surface.setTitle("ROV");
+ // Initialise the ControlIO
+ control = ControlIO.getInstance(this);
+ // Find a gamepad that matches the configuration file. To match with any 
+ // connected device remove the call to filter.
+ gpad = control.filter(GCP.GAMEPAD).getMatchedDevice("xbox360");
+ if (gpad == null) {
+   println("No suitable device configured");
+   System.exit(-1); // End the program NOW!
+  }
+}
+
+public void getUserInput() {
+  x= gpad.getSlider("AxeX").getValue();
+  y= gpad.getSlider("AxeY").getValue();
+  z= -gpad.getSlider("RotationY").getValue();
 }
 
 void draw()
 {
+  getUserInput();
+  moteur1=int(map((x-y),-2,2,-255,255));
+  moteur2=int(map((-y-x),-2,2,-255,255));
+  moteur3=int(map(z,-1,1,-255,255));
   if (myPort.available()>0) 
   {
     sb=myPort.readStringUntil('\n');
@@ -66,6 +99,9 @@ void draw()
   
   text("Température : "+list2[3]+" °C",-width/2,16-height/2);
   text("Pression : "+list2[4]+" mBar",-width/2,32-height/2);
+  text("moteur 1 : "+moteur1,-width/2,48-height/2);
+  text("moteur 2 : "+moteur2,-width/2,64-height/2);
+  text("moteur 3 : "+moteur3,-width/2,80-height/2);
 }
 
 void drawCylinder(float topRadius, float bottomRadius, float tall, int sides) {
