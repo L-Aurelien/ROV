@@ -1,9 +1,4 @@
 /*
- MS5540C Miniature Barometer Module
- This program will read your MS5440C or compatible pressure sensor every 5 seconds and show you the calibration words, the calibration factors,
- the raw values and the compensated values of temperature and pressure.
- Once you read out the calibration factors you can define them in the header of any sketch you write for the sensor.
- 
 Pins:
  MS5540 sensor attached to pins 10 - 13:
  MOSI (DIN): pin 11
@@ -11,9 +6,6 @@ Pins:
  SCK: pin 13
  MCLK: pin 9 (or use external clock generator on 32kHz)
  CS is not in use, but might be pin 10
- 
- created 29 February 2012
- by MiGeRA
 */
 
 // include library:
