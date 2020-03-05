@@ -1,0 +1,15 @@
+xbox 360 controller
+AxeY	YL	3	SLIDER	Axe Y	0	1.0	0.0
+AxeX	XL	3	SLIDER	Axe X	0	1.0	0.0
+RotationY	YR	3	SLIDER	Rotation Y	0	1.0	0.0
+RotationX	XR	3	SLIDER	Rotation X	0	1.0	0.0
+AxeZ	LTRT	3	SLIDER	Axe Z	0	1.0	0.0
+Bouton0	A	1	BUTTON	Bouton 0	0	0.0	0.0
+Bouton1	B	1	BUTTON	Bouton 1	0	0.0	0.0
+Bouton2	X	1	BUTTON	Bouton 2	0	0.0	0.0
+Bouton3	Y	1	BUTTON	Bouton 3	0	0.0	0.0
+Bouton4	LB	1	BUTTON	Bouton 4	0	0.0	0.0
+Bouton5	RB	1	BUTTON	Bouton 5	0	0.0	0.0
+Bouton6	Back	1	BUTTON	Bouton 6	0	0.0	0.0
+Bouton7	Start	1	BUTTON	Bouton 7	0	0.0	0.0
+Cooliehat	Commande de pouce	2	HAT	cooliehat: Commande de pouce	0	1.0	0.0
