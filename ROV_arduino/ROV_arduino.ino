@@ -17,6 +17,28 @@ MPU6050 mpu6050(Wire);
 // generate a MCKL signal pin
 const int clock = 9;
 
+String moteur[3]={"0","0","0"};
+
+int pin1[3]={7,2,4}; //pin de commande 1
+int pin2[3]={1,3,5}; // pin de commande 2
+int pinP[3]={10,5,6};// pin PWM moteur
+
+char valeur;
+char c;
+int v;
+int i=0;
+int valeur2[3]={0,0,0};
+int SER_Pin = 3;   //pin 14 on the 74HC595
+int RCLK_Pin = 4;  //pin 12 on the 74HC595
+int SRCLK_Pin = 7; //pin 11 on the 74HC595
+ 
+//How many of the shift registers - change this
+#define number_of_74hc595s 1 
+ 
+//do not touch
+#define numOfRegisterPins number_of_74hc595s * 8
+ 
+boolean registers[numOfRegisterPins];
 
 void resetsensor() //this function keeps the sketch a little shorter
 {
@@ -42,6 +64,7 @@ int result(int x)
 }
 
 
+
 void setup() {
   Serial.begin(9600);
   SPI.begin(); //see SPI library details on arduino.cc for details
@@ -52,10 +75,75 @@ void setup() {
   mpu6050.begin();
   mpu6050.calcGyroOffsets(true);
   delay(100);
+  pinMode(pinP[0],OUTPUT);
+  pinMode(pinP[1],OUTPUT);
+  pinMode(pinP[2],OUTPUT);
+  pinMode(SER_Pin, OUTPUT);
+  pinMode(RCLK_Pin, OUTPUT);
+  pinMode(SRCLK_Pin, OUTPUT);
+ 
+  //reset all register pins
+  clearRegisters();
+  writeRegisters();
+}
+
+//set all register pins to LOW
+void clearRegisters(){
+  for(int i = numOfRegisterPins - 1; i >=  0; i--){
+     registers[i] = LOW;
+  }
+} 
+ 
+//Set and display registers
+//Only call AFTER all values are set how you would like (slow otherwise)
+void writeRegisters(){
+ 
+  digitalWrite(RCLK_Pin, LOW);
+ 
+  for(int i = numOfRegisterPins - 1; i >=  0; i--){
+    digitalWrite(SRCLK_Pin, LOW);
+ 
+    int val = registers[i];
+ 
+    digitalWrite(SER_Pin, val);
+    digitalWrite(SRCLK_Pin, HIGH);
+ 
+  }
+  digitalWrite(RCLK_Pin, HIGH);
+ 
+}
+ 
+//set an individual pin HIGH or LOW
+void setRegisterPin(int index, int value){
+  registers[index] = value;
 }
 
 void loop()
 {
+  while (Serial.available()){
+    c = Serial.read();
+    if ((c>='0')&&(c<='9')){
+      v=10*v+c-'0';
+    }
+    else if (c=='p'){
+      valeur2[i]=v;
+      i++;
+      v=0;
+    }
+    else if (c=='n'){
+      valeur2[i]=-v;
+      i++;
+      v=0;
+    }
+    else {
+      i=0 ;
+      mpu6050.update();
+    }
+  }
+  actionMoteur(0);
+  actionMoteur(1);
+  actionMoteur(2);
+  
   mpu6050.update();
   Serial.print(mpu6050.getAngleX());
   Serial.print(":");
@@ -153,4 +241,27 @@ float Press()
   const long X = (SENS * (D1 - 7168) >> 14) - OFF;
   long PCOMP = ((X * 10) >> 5) + 2500;
   return float(PCOMP)/10;
+}
+
+void actionMoteur(int moteur){
+  int etat1,etat2,puissance=valeur2[moteur]; //variable de la fonction
+  
+  //test sens du moteur 1,-1 (sens contraire) ou tout autre valeur (stoppe le moteur)
+  if (puissance>0){
+    etat1=HIGH;
+    etat2=LOW;
+  }
+  else if (puissance<0){
+    etat1=LOW;
+    etat2=HIGH;
+  }
+  else {
+    
+    etat1=LOW;
+    etat2=LOW;
+  }
+  analogWrite(pinP[moteur],abs(puissance));
+  setRegisterPin(pin1[moteur], etat1);
+  setRegisterPin(pin2[moteur], etat2);
+  writeRegisters();
 }
