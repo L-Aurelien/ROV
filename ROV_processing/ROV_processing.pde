@@ -50,6 +50,8 @@ void draw()
   moteur1=int(map((x-y),-2,2,-255,255));
   moteur2=int(map((-y-x),-2,2,-255,255));
   moteur3=int(map(z,-1,1,-255,255));
+  String azer=moteur1+":"+moteur2+":"+moteur3;
+  myPort.write(azer);
   if (myPort.available()>0) 
   {
     sb=myPort.readStringUntil('\n');
@@ -102,6 +104,7 @@ void draw()
   text("moteur 1 : "+moteur1,-width/2,48-height/2);
   text("moteur 2 : "+moteur2,-width/2,64-height/2);
   text("moteur 3 : "+moteur3,-width/2,80-height/2);
+  text(azer,-width/2,96-height/2);
 }
 
 void drawCylinder(float topRadius, float bottomRadius, float tall, int sides) {
